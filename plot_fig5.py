@@ -9,15 +9,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Add thesis style sheet
-# plt.style.use('./python_files/figure_style.mplstyle')
-# plt.style.use('../paper_style_pdf_tex.mplstyle')
-plt.style.use('../style-files/small/paper_style_pdf_tex.mplstyle')
+plt.style.use('./python_files/figure_style.mplstyle')
 
 plt.close('all')
 
 # Figure filename
-# filename_out = "../../images/sect3/fig5_spectrum_high_drive_xi.pdf"
-filename_out = "../../images/svg/fig5_spectrum_high_drive_xi.svg"
+filename_out = "./images/fig5_spectrum_high_drive_xi.svg"
 
 #-----------------------------------------------------------------------------#
 #                                  FUNCTIONS                                  #
@@ -137,13 +134,14 @@ for i in range(len(xi)):
 #-----------------------------------------------------------------------------#
 ##                              PLOT SPECTRUM                                ##
 #-----------------------------------------------------------------------------#
-figsize = np.array([6.0, 7.0])
-# figsize *= (8.5 / 2.54) / 6
-# figsize = np.array([7.5, 8.5]) / 2.54
+# Figure size in centimetres
+
+figsize = np.array([7.4, 9.1])
+figsize *= 1 / 2.54
 
 plt.close('all')
 fig, ax = plt.subplots(num='Spectrum (Low and High)', nrows=3, ncols=1,
-                       figsize=[2.95275591, 3.34645669], sharex=True)
+                       figsize=figsize, sharex=True)
 
 #--------------#
 #     Plot     #
@@ -184,19 +182,18 @@ for i in range(len(xi)):
 # for i in range(len(xi)):
 #     ax[i].set_ylabel(r'$S_{\mathrm{inc}}(\omega)$ (a.u.)')
 
-#-----------------------#
-#     Figure Labels     #
-#-----------------------#
-xpos = -115
-ypos = 0.94
-
-# ax[0].text(x=xpos, y=ypos, s='(a)')
-# ax[1].text(x=xpos, y=ypos, s='(b)')
-# ax[2].text(x=xpos, y=ypos, s='(c)')
+#---------------------#
+#     Tick Labels     #
+#---------------------#
+# Turn off tick labels for plot
+for i in range(len(xi)):
+    ax[i].set_xticklabels([])
+    ax[i].set_yticklabels([])
 
 #----------------------#
 #     Figure Stuff     #
 #----------------------#
-fig.tight_layout()
+# fig.tight_layout()
+fig.tight_layout(pad=0.2, h_pad=0.2, w_pad=0.2)
 fig.savefig(filename_out)
 # fig.show()

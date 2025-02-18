@@ -213,11 +213,12 @@ from matplotlib import colormaps
 cmap = colormaps['inferno_r']
 
 # Figure size in centimetres
-figsize = np.array([7.8, 5.2])
+figsize = np.array([7.4, 3.5])
 figsize *= 1 / 2.54
 
 # Create figure
-fig = plt.figure(num='Spectrum Scans (Omega)')
+plt.close('all')
+fig = plt.figure(num='Spectrum Scans (Omega)', figsize=figsize)
 ax = plt.gca()
 
 # Calculate the stretched boundary norm
@@ -277,6 +278,6 @@ cbar.set_ticklabels([])
 #     Figures stuff     #
 #-----------------------#
 # fig.tight_layout()
-# fig.tight_layout(pad=0.2, h_pad=0.2, w_pad=0.2)
+fig.tight_layout(pad=0.2, h_pad=0.2, w_pad=0.2)
 fig.savefig(filename_out)
 # fig.show()
