@@ -1,0 +1,31 @@
+&ATOM
+  ! Parameters in units of the decay rate gamma
+  ! Atomic decay rate
+  Gamma = 1.0d0
+  ! Drive strength (Rabi Frequency)
+  Omega = 40.0d0
+  ! Atomic anharmonicity (omega_{fe} - \omega_{eg})
+  alpha = -120.0d0
+  ! Drive detuning from two-photon resonance (\omega_{d} - \omega_{fg}/2)
+  delta = 0.0d0
+  ! Dipole moment ratio
+  xi = 0.5d0
+/
+
+&SCANPARAMS
+  ! First scan parameter
+  scan_start = 0.1d0
+  ! Last scan parameter
+  scan_end = 55.1d0
+  ! Step size of scans
+  scan_step = 0.2d0
+/
+
+&TIME
+  ! time step
+  dt = 0.01d0
+  ! Maximum g1 time in units of \gamma \tau
+  tau1_max = 100.0d0
+  ! max g2 time in units of \gamma \tau
+  tau2_max = 10.0d0
+/
