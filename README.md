@@ -3,7 +3,7 @@
 Python and Fortran scripts for generating the data and figures in the paper "Two-Photon Resonance Fluorescence of a Three-Level Ladder-Type Atom" by Jacob Ngaha, Scott Parkins, and Howard Carmichael.
 
 ## Usage
-Each of the `plot_figX.py` files can simply be run as standard Python scripts. They make used of the Matplotlib, NumPy, and QuTiP libraries.
+Each of the `plot_figX.py` files can simply be run as standard Python scripts. They make used of the [Matplotlib](https://matplotlib.org/), [NumPy](https://numpy.org/), and [QuTiP](https://qutip.org/) libraries.
 
 For the `figX_data` folders, the programs are written in Fortran90 and and can be compiled using Intel's oneAPI `ifx` compiler, with the command
 ```
