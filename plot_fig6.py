@@ -280,8 +280,7 @@ def plot_figure(i):
     #-----------------------#
     # fig.tight_layout()
     fig.tight_layout(pad=0.2, h_pad=0.2, w_pad=0.2)
-    filename_out = '../svgs/fig6{}_spectrum_scan_delta.svg'.format(subfigure_labels[i])
-    # fig.savefig(filename_out)
+    # fig.savefig(filename_out.format(subfigure_labels[i])
     # fig.show()
 
 for i in range(len(xi_directory)):
