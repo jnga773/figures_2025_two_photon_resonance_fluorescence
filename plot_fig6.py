@@ -18,7 +18,7 @@ plt.close('all')
 xi_directory = ["xi_0-5", "xi_1-0", "xi_1-5"]
 
 # Figure filename
-filename_out = './images/fig6{}_spectrum_scan_delta.svg'
+filename_out = '../svgs/fig6{}_spectrum_scan_delta.svg'
     
 #-----------------------------------------------------------------------------#
 #                                  FUNCTIONS                                  #
@@ -280,8 +280,8 @@ def plot_figure(i):
     #-----------------------#
     # fig.tight_layout()
     fig.tight_layout(pad=0.2, h_pad=0.2, w_pad=0.2)
-    filename_out = './images/fig6{}_spectrum_scan_delta.svg'.format(subfigure_labels[i])
-    fig.savefig(filename_out)
+    filename_out = '../svgs/fig6{}_spectrum_scan_delta.svg'.format(subfigure_labels[i])
+    # fig.savefig(filename_out)
     # fig.show()
 
 for i in range(len(xi_directory)):

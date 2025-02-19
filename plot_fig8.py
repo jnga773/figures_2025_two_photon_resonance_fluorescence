@@ -9,16 +9,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Add thesis style sheet
-# plt.style.use('./python_files/figure_style.mplstyle')
-plt.style.use('../paper_style_pdf_tex.mplstyle')
+plt.style.use('./python_files/figure_style.mplstyle')
 
 import python_files.three_level_moments as tla
 
 plt.close('all')
 
 # Figure filename
-# filename_out = "../../images/sect4/fig8_atom_g2_high_drive.pdf"
-filename_out = "../../images/svg/fig8_atom_g2_high_drive.svg"
+filename_out = "../svgs/fig8_atom_g2_high_drive.svg"
 
 #-----------------------------------------------------------------------------#
 #                                FUNCTIONS                                    #
@@ -157,8 +155,9 @@ for i in range(len(xi)):
 #-----------------------------------------------------------------------------#
 #                                  PLOT G2                                    #
 #-----------------------------------------------------------------------------#
-figsize = np.array([6., 7.])
-# figsize *= (8.5 / 2.54) / 6
+# Figure size in centimetres
+figsize = np.array([7.4, 9.1])
+figsize *= 1 / 2.54
 
 plt.close('g2 (Low and High)')
 fig, ax = plt.subplots(num='g2 (Low and High)', nrows=3, ncols=1, figsize=figsize,
@@ -207,22 +206,31 @@ ax[2].set_xlim(-0.1, 10.1)
 #---------------------#
 #     Axis Labels     #
 #---------------------#
-# Labels
-ax[2].set_xlabel(r'$\Gamma \tau$')
+# # Labels
+# ax[2].set_xlabel(r'$\Gamma \tau$')
+# for i in range(len(xi)):
+#     ax[i].set_ylabel(r'$g^{(2)}_{ss}(\tau)$')
+
+#---------------------#
+#     Tick Labels     #
+#---------------------#
+# Turn off tick labels for plot
 for i in range(len(xi)):
-    ax[i].set_ylabel(r'$g^{(2)}_{ss}(\tau)$')
+    ax[i].set_xticklabels([])
+    ax[i].set_yticklabels([])
 
 #-----------------------#
 #     Figure Labels     #
 #-----------------------#
-xpos = 9.55
-ax[0].text(x=xpos, y=1.70, s='(a)')
-ax[1].text(x=xpos, y=1.35, s='(b)')
-ax[2].text(x=xpos, y=1.35, s='(c)')
+# xpos = 9.55
+# ax[0].text(x=xpos, y=1.70, s='(a)')
+# ax[1].text(x=xpos, y=1.35, s='(b)')
+# ax[2].text(x=xpos, y=1.35, s='(c)')
 
 #----------------------#
 #     Figure Stuff     #
 #----------------------#
-fig.tight_layout()
-fig.savefig(filename_out)
+# fig.tight_layout()
+fig.tight_layout(pad=0.2, h_pad=0.2, w_pad=0.2)
+# fig.savefig(filename_out)
 # fig.show()

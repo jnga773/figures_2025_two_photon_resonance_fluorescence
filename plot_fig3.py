@@ -14,7 +14,7 @@ plt.style.use('./python_files/figure_style.mplstyle')
 plt.close('all')
 
 # Figure filename
-filename_out = "./images/fig3_spectrum_labelled_high_low_drive.svg"
+filename_out = "../svgs/fig3_spectrum_labelled_high_low_drive.svg"
 
 #-----------------------------------------------------------------------------#
 #                                  FUNCTIONS                                  #
@@ -176,5 +176,5 @@ for i in range(2):
 #     Figure Stuff     #
 #----------------------#
 fig.tight_layout(pad=0.2, h_pad=0.2, w_pad=0.2)
-fig.savefig(filename_out)
+# fig.savefig(filename_out)
 # fig.show()

@@ -12,13 +12,11 @@ import python_files.three_level_moments as tla
 
 # Add thesis style sheet
 plt.style.use('./python_files/figure_style.mplstyle')
-# plt.style.use('../paper_style_pdf_tex.mplstyle')
 
 plt.close('all')
 
 # Figure filename
-filename_out = "../../images/sect4/fig7_atom_g2_low_drive.pdf"
-# filename_out = "../../images/svg/fig7_atom_g2_low_drive.svg"
+filename_out = "../svgs/fig7_atom_g2_low_drive.svg"
 
 #-----------------------------------------------------------------------------#
 #                                FUNCTIONS                                    #
@@ -148,7 +146,11 @@ for i in range(len(Omega_list)):
 #-----------------------------------------------------------------------------#
 #                                  PLOT G2                                    #
 #-----------------------------------------------------------------------------#
-fig = plt.figure(num='3LA g2')
+# Figure size in centimetres
+figsize = np.array([7.4, 3.5])
+figsize *= 1 / 2.54
+
+fig = plt.figure(num='3LA g2', figsize=figsize)
 ax = plt.gca()
 
 #--------------#
@@ -157,16 +159,8 @@ ax = plt.gca()
 for i in range(len(Omega_list)):
     ax.plot(tau, g2_list[i], color='C{}'.format(i), ls='solid',
             label=r'$\Omega = {} \Gamma$'.format(Omega_list[i]))
-    # ax.semilogy(tau, g2_list[i], color='C{}'.format(i), ls='solid',
-    #             label=r'$\Omega / \Gamma = {}$'.format(Omega_list[i]))
     
-ax.legend()
-
-#----------------#
-#     Labels     #
-#----------------#
-ax.set_xlabel(r'$\Gamma \tau$')
-ax.set_ylabel(r'$g^{(2)}_{ss}(\tau)$')
+ax.legend(fontsize=7)
 
 #---------------#
 #     Ticks     #
@@ -178,11 +172,18 @@ y_ticks = np.arange(0.0, 1.6e4, 0.2e4)
 ax.set_yticks(y_ticks)
 ax.set_yticks(y_ticks + 1e3, minor=True)
 
-# y_ticks_labels = []
-# for i in y_ticks:
-#     string = r'${:.1f} \times 10^{{4}}$'.format(1e-3 * i)
-#     y_ticks_labels.append(string)
-# ax.set_yticklabels(y_ticks_labels, fontsize=11)
+#----------------#
+#     Labels     #
+#----------------#
+# ax.set_xlabel(r'$\Gamma \tau$')
+# ax.set_ylabel(r'$g^{(2)}_{ss}(\tau)$')
+
+#---------------------#
+#     Tick Labels     #
+#---------------------#
+# Turn off tick labels for plot
+ax.set_xticklabels([])
+ax.set_yticklabels([])
 
 #----------------#
 #     Limits     #
@@ -194,6 +195,7 @@ ax.set_ylim(-0.025 * 1.4e4, 1.025 * 1.4e4)
 #----------------------#
 #     Figure Stuff     #
 #----------------------#
-fig.tight_layout()
-fig.savefig(filename_out)
+# fig.tight_layout()
+fig.tight_layout(pad=0.2, h_pad=0.2, w_pad=0.2)
+# fig.savefig(filename_out)
 # fig.show()

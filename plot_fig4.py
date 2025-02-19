@@ -18,7 +18,7 @@ plt.close('all')
 xi_directory = ["xi_0-5", "xi_1-0", "xi_1-5"]
 
 # Figure filename
-filename_out = './images/fig4_spectrum_scan_Omega.svg'
+filename_out = '../svgs/fig4_spectrum_scan_Omega.svg'
 
 #-----------------------------------------------------------------------------#
 #                                  FUNCTIONS                                  #
@@ -279,5 +279,5 @@ cbar.set_ticklabels([])
 #-----------------------#
 # fig.tight_layout()
 fig.tight_layout(pad=0.2, h_pad=0.2, w_pad=0.2)
-fig.savefig(filename_out)
+# fig.savefig(filename_out)
 # fig.show()

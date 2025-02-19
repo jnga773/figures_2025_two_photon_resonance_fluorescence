@@ -17,7 +17,7 @@ import python_files.three_level_moments as tla
 plt.close('all')
 
 # Figure filename
-filename_out = "./images/fig2_ss_map_constant_alpha.svg"
+filename_out = "../svgs/fig2_ss_map_constant_alpha.svg"
 
 #-----------------------------------------------------------------------------#
 #                                FUNCTIONS                                    #
@@ -201,5 +201,5 @@ cbar.set_ticklabels([])
 #     Figures stuff     #
 #-----------------------#
 # fig.tight_layout()
-fig.savefig(filename_out)
+# fig.savefig(filename_out)
 fig.show()

@@ -10,26 +10,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Add thesis style sheet
-# plt.style.use('./python_files/figure_style.mplstyle')
-plt.style.use('../paper_style_pdf_tex.mplstyle')
+plt.style.use('./python_files/figure_style.mplstyle')
 
-import three_level_moments as tla
+import python_files.three_level_moments as tla
 
 plt.close('all')
 
 # Figure filename
-# filename_out = "../../images/sect4/fig10_g2_dressed_cross.pdf"
-filename_out = "../../images/svg/fig10_g2_dressed_cross_TEST.svg"
-
-# # Use PGF backend and LaTeX settings
-# import matplotlib
-# matplotlib.use("pgf")
-# matplotlib.rcParams.update({
-#     "pgf.texsystem": "pdflatex",
-#     "text.usetex": True,
-#     "pgf.rcfonts": False,
-# })
-# filename_out = "../../images/pgf/fig10_g2_dressed_cross.pgf"
+filename_out = "../svgs/fig10_g2_dressed_cross.svg"
 
 #-----------------------------------------------------------------------------#
 #                                FUNCTIONS                                    #
@@ -285,7 +273,12 @@ label3 = plot_label(peak1, peak2)
 #-----------------------------------------------------------------------------#
 #                           PLOT CROSS-CORRELATION                            #
 #-----------------------------------------------------------------------------#
-fig = plt.figure(num='G2 Cross')
+# Figure size in centimetres
+figsize = np.array([7.4, 3.5])
+figsize *= 1 / 2.54
+
+plt.close('all')
+fig = plt.figure(num='G2 Cross', figsize=figsize)
 ax = plt.gca()
 
 # Add dashed line at \tau = 0
@@ -316,7 +309,7 @@ ax.plot(np.flip(-tau), np.flip(g2_dressed_neg_3), color='C2', ls='dotted')
 #----------------#
 #     Legend     #
 #----------------#
-ax.legend()
+# ax.legend(fontsize=5)
 
 #--------------------#
 #     Axis Ticks     #
@@ -338,12 +331,20 @@ ax.set_ylim(-0.05, 3.05)
 #---------------------#
 #     Axis Labels     #
 #---------------------#
-ax.set_xlabel(r'$\Gamma \tau$')
-ax.set_ylabel(r'$g^{{(2)}}(\tilde{\omega}_{i}, 0; \tilde{\omega}_{j}, \tau)$')
+# ax.set_xlabel(r'$\Gamma \tau$')
+# ax.set_ylabel(r'$g^{{(2)}}(\tilde{\omega}_{i}, 0; \tilde{\omega}_{j}, \tau)$')
+
+#---------------------#
+#     Tick Labels     #
+#---------------------#
+# Turn off tick labels for plot
+ax.set_xticklabels([])
+ax.set_yticklabels([])
 
 #----------------------#
 #     Figure Stuff     #
 #----------------------#
-fig.tight_layout()
-fig.savefig(filename_out)
+# fig.tight_layout()
+fig.tight_layout(pad=0.2, h_pad=0.2, w_pad=0.2)
+# fig.savefig(filename_out)
 fig.show()

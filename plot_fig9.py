@@ -11,25 +11,13 @@ import matplotlib.pyplot as plt
 
 # Add thesis style sheet
 plt.style.use('./python_files/figure_style.mplstyle')
-# plt.style.use('../paper_style_pdf_tex.mplstyle')
 
-import three_level_moments as tla
+import python_files.three_level_moments as tla
 
 plt.close('all')
 
 # Figure filename
-filename_out = "../../images/sect4/fig9_g2_dressed_auto.pdf"
-# filename_out = "../../images/svg/fig9_g2_dressed_auto.svg"
-
-# # Use PGF backend and LaTeX settings
-# import matplotlib
-# matplotlib.use("pgf")
-# matplotlib.rcParams.update({
-#     "pgf.texsystem": "pdflatex",
-#     "text.usetex": True,
-#     "pgf.rcfonts": False,
-# })
-# filename_out = "../../images/pgf/fig9_g2_dressed_auto.pgf"
+filename_out = "../svgs/fig9_g2_dressed_auto.svg"
 
 #-----------------------------------------------------------------------------#
 #                                FUNCTIONS                                    #
@@ -94,8 +82,12 @@ g2_0, g2_1, g2_2, g2_3 = calc_g2_dressed(tau, Gamma, xi)
 #-----------------------------------------------------------------------------#
 #                                  PLOT G2                                    #
 #-----------------------------------------------------------------------------#
+# Figure size in centimetres
+figsize = np.array([7.4, 3.5])
+figsize *= 1 / 2.54
+
 plt.close('g2 auto dressed')
-fig = plt.figure(num='g2 auto dressed')
+fig = plt.figure(num='g2 auto dressed', figsize=figsize)
 ax = plt.gca()
 
 #--------------#
@@ -110,29 +102,7 @@ ax.plot(tau, g2_1, color='C1', ls='dashed', label=r'$g^{(2)}_{\pm 1}(\tau) , g^{
 # Third peak
 ax.plot(tau, g2_3, color='C2', ls='dashdot', label=r'$g^{(2)}_{\pm 3}(\tau)$')
 
-ax.legend()
-
-#--------------#
-#     Text     #
-#--------------#
-# # Text
-# ax.text(x=2, y=1.3, s=r'$g^{(2)}_{0}(\tau)$')
-# ax.text(x=3, y=0.7, s=r'$g^{(2)}_{\pm 1}(\tau), g^{(2)}_{\pm 2}(\tau)$')
-# ax.text(x=5, y=0.3, s=r'$g^{(2)}_{\pm 3}(\tau)$')
-
-# # Arrows
-# ax.arrow(x=2.175, y=1.25, dx=0, dy=-0.1, head_starts_at_zero=False,
-#          head_length=0.04, head_width=0.075, edgecolor='k', facecolor='k')
-# ax.arrow(x=4.4, y=0.8, dx=0, dy=0.1, head_starts_at_zero=False,
-#          head_length=0.04, head_width=0.04, edgecolor='k', facecolor='k')
-# ax.arrow(x=5.75, y=0.4, dx=0, dy=0.15, head_starts_at_zero=False,
-#          head_length=0.04, head_width=0.075, edgecolor='k', facecolor='k')
-
-#----------------#
-#     Labels     #
-#----------------#
-ax.set_xlabel(r'$\Gamma \tau$')
-ax.set_ylabel(r'$g^{(2)}_{\pm i}(\tau)$')
+# ax.legend()
 
 #---------------#
 #     Ticks     #
@@ -149,9 +119,23 @@ ax.set_yticks(np.arange(0.0, 1.75, 0.125), minor=True)
 ax.set_xlim(-0.1, 10.1)
 ax.set_ylim(-0.05, 1.6)
 
+#----------------#
+#     Labels     #
+#----------------#
+# ax.set_xlabel(r'$\Gamma \tau$')
+# ax.set_ylabel(r'$g^{(2)}_{\pm i}(\tau)$')
+
+#---------------------#
+#     Tick Labels     #
+#---------------------#
+# Turn off tick labels for plot
+ax.set_xticklabels([])
+ax.set_yticklabels([])
+
 #----------------------#
 #     Figure Stuff     #
 #----------------------#
-fig.tight_layout()
-fig.savefig(filename_out)
+# fig.tight_layout()
+fig.tight_layout(pad=0.2, h_pad=0.2, w_pad=0.2)
+# fig.savefig(filename_out)
 # fig.show()

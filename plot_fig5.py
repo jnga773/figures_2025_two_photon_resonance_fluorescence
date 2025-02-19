@@ -14,7 +14,7 @@ plt.style.use('./python_files/figure_style.mplstyle')
 plt.close('all')
 
 # Figure filename
-filename_out = "./images/fig5_spectrum_high_drive_xi.svg"
+filename_out = "../svgs/fig5_spectrum_high_drive_xi.svg"
 
 #-----------------------------------------------------------------------------#
 #                                  FUNCTIONS                                  #
@@ -135,7 +135,6 @@ for i in range(len(xi)):
 ##                              PLOT SPECTRUM                                ##
 #-----------------------------------------------------------------------------#
 # Figure size in centimetres
-
 figsize = np.array([7.4, 9.1])
 figsize *= 1 / 2.54
 
@@ -195,5 +194,5 @@ for i in range(len(xi)):
 #----------------------#
 # fig.tight_layout()
 fig.tight_layout(pad=0.2, h_pad=0.2, w_pad=0.2)
-fig.savefig(filename_out)
+# fig.savefig(filename_out)
 # fig.show()
