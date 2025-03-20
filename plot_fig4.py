@@ -17,7 +17,7 @@ plt.style.use('./python_files/figure_style.mplstyle')
 xi_directory = ["xi_1_over_root_2", "xi_1", "xi_root_2"]
 
 # Figure filename
-filename_out = '../svgs/fig4_spectrum_scan_Omega.svg'
+filename_out = './svgs/fig4_spectrum_scan_Omega.svg'
 
 #-----------------------------------------------------------------------------#
 #                                  FUNCTIONS                                  #
@@ -277,6 +277,6 @@ cbar.set_ticklabels([])
 #     Figures stuff     #
 #-----------------------#
 # fig.tight_layout()
-fig.tight_layout(pad=0.2, h_pad=0.2, w_pad=0.2)
+# fig.tight_layout(pad=w0.2, h_pad=0.2, w_pad=0.2)
 # fig.savefig(filename_out)
 # fig.show()

@@ -14,7 +14,7 @@ plt.style.use('default')
 plt.style.use('./python_files/figure_style.mplstyle')
 
 # Figure filename
-filename_out = "../svgs/fig8_atom_g2_high_drive.svg"
+filename_out = "./svgs/fig8_atom_g2_high_drive.svg"
 
 #-----------------------------------------------------------------------------#
 #                                FUNCTIONS                                    #

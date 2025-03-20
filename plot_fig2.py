@@ -15,7 +15,7 @@ plt.style.use('default')
 plt.style.use('./python_files/figure_style.mplstyle')
 
 # Figure filename
-filename_out = "../svgs/fig2_ss_map_constant_alpha.svg"
+filename_out = "./svgs/fig2_ss_map_constant_alpha.svg"
 
 #-----------------------------------------------------------------------------#
 #                                FUNCTIONS                                    #

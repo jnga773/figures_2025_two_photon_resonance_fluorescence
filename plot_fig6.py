@@ -17,7 +17,7 @@ plt.style.use('./python_files/figure_style.mplstyle')
 xi_directory = ["xi_1_over_root_2", "xi_1", "xi_root_2"]
 
 # Figure filename
-filename_out = '../svgs/fig6{}_spectrum_scan_delta.svg'
+filename_out = './svgs/fig6{}_spectrum_scan_delta.svg'
     
 #-----------------------------------------------------------------------------#
 #                                  FUNCTIONS                                  #
@@ -214,7 +214,8 @@ def plot_figure(i):
     cmap = colormaps['inferno_r']
     
     # Figure size in centimetres
-    figsize = np.array([7.4, 3.5])
+    # figsize = np.array([7.4, 3.5])
+    figsize = np.array([6.5, 3.5])
     figsize *= 1 / 2.54
     
     # Create figure
@@ -279,8 +280,8 @@ def plot_figure(i):
     #     Figures stuff     #
     #-----------------------#
     # fig.tight_layout()
-    fig.tight_layout(pad=0.2, h_pad=0.2, w_pad=0.2)
-    # fig.savefig(filename_out.format(subfigure_labels[i]))
+    # fig.tight_layout(pad=0.2, h_pad=0.2, w_pad=0.2)
+    fig.savefig(filename_out.format(subfigure_labels[i]))
     # fig.show()
 
 for i in range(len(xi_directory)):
