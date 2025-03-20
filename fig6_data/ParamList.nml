@@ -9,7 +9,9 @@
   ! Drive detuning from two-photon resonance (\omega_{d} - \omega_{fg}/2)
   delta = 0.0d0
   ! Dipole moment ratio
-  xi = 1.0d0
+  ! xi = 0.70710678118d0
+  ! xi = 1.0d0
+  xi = 1.41421356237d0
 /
 
 &SCANPARAMS

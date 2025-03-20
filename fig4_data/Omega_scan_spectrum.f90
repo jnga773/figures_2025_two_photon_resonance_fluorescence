@@ -66,12 +66,14 @@ INTEGER                                                :: index
 !     FILENAME STUFF     !
 !------------------------!
 ! Paramert Name List
-CHARACTER(LEN=15), PARAMETER :: filename_ParamList = "./ParamList.nml"
+CHARACTER(LEN=15), PARAMETER                           :: filename_ParamList = "./ParamList.nml"
+! Data subdirectory name
+CHARACTER(LEN=99)                                      :: data_directory
 ! Filename of parameters
-CHARACTER(LEN=99), PARAMETER :: filename_parameters = "./data_files/g1_parameters.txt"
+CHARACTER(LEN=99)                                      :: filename_parameters
 ! Filename for first-order correlation
-CHARACTER(LEN=99), PARAMETER :: filename_g1_real = "./data_files/g1_corr_real.txt"
-CHARACTER(LEN=99), PARAMETER :: filename_g1_imag = "./data_files/g1_corr_imag.txt"
+CHARACTER(LEN=99)                                      :: filename_g1_real
+CHARACTER(LEN=99)                                      :: filename_g1_imag
 
 !==============================================================================!
 !                 NAMELIST AND PARAMETERS TO BE READ FROM FILE                 !
@@ -126,6 +128,27 @@ tau_steps = NINT(tau1_max / dt)
 
 ! Number of scan steps
 number_of_scans = NINT((scan_end - scan_start) / scan_step)
+
+!==============================================================================!
+!                          CREATE DATA SUBDIRECTORIES                          !
+!==============================================================================!
+! Create folder for data files
+IF (xi .EQ. 0.70710678118d0) THEN
+  data_directory = './data_files/scan_xi_1_over_root_2/'
+ELSE IF (xi .EQ. 1.0d0) THEN
+  data_directory = './data_files/scan_xi_1/'
+ELSE IF (xi .EQ. 1.41421356237d0) THEN
+  data_directory = './data_files/scan_xi_root_2/'
+END IF
+
+! Create data directory
+PRINT*, data_directory
+CALL EXECUTE_COMMAND_LINE("mkdir -p " // TRIM(data_directory))
+
+! Set filenames
+filename_parameters = TRIM(data_directory) // "g1_parameters.txt"
+filename_g1_real    = TRIM(data_directory) // "g1_corr_real.txt"
+filename_g1_imag    = TRIM(data_directory) // "g1_corr_imag.txt"
 
 !==============================================================================!
 !                         ALLOCATING ARRAYS AND STUFF                          !

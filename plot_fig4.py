@@ -14,7 +14,7 @@ plt.style.use('default')
 plt.style.use('./python_files/figure_style.mplstyle')
 
 # Xi directory
-xi_directory = ["xi_0-5", "xi_1-0", "xi_1-5"]
+xi_directory = ["xi_1_over_root_2", "xi_1", "xi_root_2"]
 
 # Figure filename
 filename_out = '../svgs/fig4_spectrum_scan_Omega.svg'
