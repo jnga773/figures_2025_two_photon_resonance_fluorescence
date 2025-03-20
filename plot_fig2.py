@@ -8,13 +8,11 @@ Created on Thu May  9 15:32:47 2024
 
 import numpy as np
 import matplotlib.pyplot as plt
-
-# Add thesis style sheet
-plt.style.use('./python_files/figure_style.mplstyle')
-
 import python_files.three_level_moments as tla
 
-plt.close('all')
+# Add figure style sheet
+plt.style.use('default')
+plt.style.use('./python_files/figure_style.mplstyle')
 
 # Figure filename
 filename_out = "../svgs/fig2_ss_map_constant_alpha.svg"
@@ -107,8 +105,8 @@ figsize = np.array([7.4, 11])
 figsize *= 1 / 2.54
 
 # Create figure
-plt.close('Full Model')
-fig, ax = plt.subplots(nrows=3, ncols=3, sharey=True, sharex=True, figsize=figsize,
+plt.close('all')
+fig, ax = plt.subplots(nrows=3, ncols=3, sharey=True, sharex=True, figsize=figsize.tolist(),
                        layout='compressed', num='Full Model')
 
 # Set constrained values for figure

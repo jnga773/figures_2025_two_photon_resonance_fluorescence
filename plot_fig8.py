@@ -7,13 +7,11 @@ Created on Thu Mar 23 21:13:37 2023
 
 import numpy as np
 import matplotlib.pyplot as plt
-
-# Add thesis style sheet
-plt.style.use('./python_files/figure_style.mplstyle')
-
 import python_files.three_level_moments as tla
 
-plt.close('all')
+# Add figure style sheet
+plt.style.use('default')
+plt.style.use('./python_files/figure_style.mplstyle')
 
 # Figure filename
 filename_out = "../svgs/fig8_atom_g2_high_drive.svg"
@@ -159,8 +157,9 @@ for i in range(len(xi)):
 figsize = np.array([7.4, 9.1])
 figsize *= 1 / 2.54
 
-plt.close('g2 (Low and High)')
-fig, ax = plt.subplots(num='g2 (Low and High)', nrows=3, ncols=1, figsize=figsize,
+# Create figure
+plt.close('all')
+fig, ax = plt.subplots(num='g2 (Low and High)', nrows=3, ncols=1, figsize=figsize.tolist(),
                        sharex=True)
 
 #--------------#

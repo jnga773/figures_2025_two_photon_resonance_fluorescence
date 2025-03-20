@@ -7,13 +7,11 @@ Created on Thu Mar 23 21:13:37 2023
 
 import numpy as np
 import matplotlib.pyplot as plt
-
 import python_files.three_level_moments as tla
 
-# Add thesis style sheet
+# Add figure style sheet
+plt.style.use('default')
 plt.style.use('./python_files/figure_style.mplstyle')
-
-plt.close('all')
 
 # Figure filename
 filename_out = "../svgs/fig7_atom_g2_low_drive.svg"
@@ -150,7 +148,9 @@ for i in range(len(Omega_list)):
 figsize = np.array([7.4, 3.5])
 figsize *= 1 / 2.54
 
-fig = plt.figure(num='3LA g2', figsize=figsize)
+# Create figure
+plt.close('all')
+fig = plt.figure(num='3LA g2', figsize=figsize.tolist())
 ax = plt.gca()
 
 #--------------#

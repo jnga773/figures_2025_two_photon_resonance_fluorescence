@@ -8,13 +8,11 @@ Created on Wed Oct 30 11:53:53 2024
 
 import numpy as np
 import matplotlib.pyplot as plt
-
-# Add thesis style sheet
-plt.style.use('./python_files/figure_style.mplstyle')
-
 import python_files.three_level_moments as tla
 
-plt.close('all')
+# Add figure style sheet
+plt.style.use('default')
+plt.style.use('./python_files/figure_style.mplstyle')
 
 # Figure filename
 filename_out = "../svgs/fig9_g2_dressed_auto.svg"
@@ -35,7 +33,7 @@ def dressed_rates(Gamma_in, xi_in):
     return lam_neg, lam_pos
 
 def calc_g2_dressed(tau_in, Gamma_in, xi_in):
-    """
+    r"""
     Calculates the dressed-state correlation functions at two-photon resonance
     in the limit \Omega  --> \infty.
     """
@@ -86,8 +84,9 @@ g2_0, g2_1, g2_2, g2_3 = calc_g2_dressed(tau, Gamma, xi)
 figsize = np.array([7.4, 3.5])
 figsize *= 1 / 2.54
 
-plt.close('g2 auto dressed')
-fig = plt.figure(num='g2 auto dressed', figsize=figsize)
+# Create figure
+plt.close('all')
+fig = plt.figure(num='g2 auto dressed', figsize=figsize.tolist())
 ax = plt.gca()
 
 #--------------#

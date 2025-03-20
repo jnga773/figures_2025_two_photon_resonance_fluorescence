@@ -8,13 +8,11 @@ Created on Wed Oct 30 11:53:53 2024
 
 import numpy as np
 import matplotlib.pyplot as plt
-
-# Add thesis style sheet
-plt.style.use('./python_files/figure_style.mplstyle')
-
 import python_files.three_level_moments as tla
 
-plt.close('all')
+# Add figure style sheet
+plt.style.use('default')
+plt.style.use('./python_files/figure_style.mplstyle')
 
 # Figure filename
 filename_out = "../svgs/fig10_g2_dressed_cross.svg"
@@ -277,8 +275,9 @@ label3 = plot_label(peak1, peak2)
 figsize = np.array([7.4, 3.5])
 figsize *= 1 / 2.54
 
+# Create figure
 plt.close('all')
-fig = plt.figure(num='G2 Cross', figsize=figsize)
+fig = plt.figure(num='G2 Cross', figsize=figsize.tolist())
 ax = plt.gca()
 
 # Add dashed line at \tau = 0

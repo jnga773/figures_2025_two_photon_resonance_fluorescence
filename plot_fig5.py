@@ -8,7 +8,8 @@ Created on Sat Mar 25 01:03:32 2023
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Add thesis style sheet
+# Add figure style sheet
+plt.style.use('default')
 plt.style.use('./python_files/figure_style.mplstyle')
 
 plt.close('all')
@@ -138,9 +139,10 @@ for i in range(len(xi)):
 figsize = np.array([7.4, 9.1])
 figsize *= 1 / 2.54
 
+# Create figure
 plt.close('all')
 fig, ax = plt.subplots(num='Spectrum (Low and High)', nrows=3, ncols=1,
-                       figsize=figsize, sharex=True)
+                       figsize=figsize.tolist(), sharex=True)
 
 #--------------#
 #     Plot     #

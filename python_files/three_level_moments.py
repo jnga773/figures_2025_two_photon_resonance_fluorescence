@@ -209,9 +209,9 @@ def print_transition_frequencies(Omega_in, alpha_in, delta_in, xi_in,
     w0, wp, wm = three_level_eig(Omega_in, alpha_in, delta_in, xi_in,
                                  vals_or_vecs='vals')
     # Print as a pretty thingy
-    print("|\omega_+ - \omega_-| = {}".format(abs(wp - wm)))
-    print("|\omega_0 - \omega_+| = {}".format(abs(w0 - wp)))
-    print("|\omega_0 - \omega_-| = {}".format(abs(w0 - wm)))
+    print(r"|\omega_+ - \omega_-| = {}".format(abs(wp - wm)))
+    print(r"|\omega_0 - \omega_+| = {}".format(abs(w0 - wp)))
+    print(r"|\omega_0 - \omega_-| = {}".format(abs(w0 - wm)))
     
     if output:
         from numpy import array

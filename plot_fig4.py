@@ -9,10 +9,9 @@ Created on Mon May 20 19:43:32 2024
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Add thesis style sheet
+# Add figure style sheet
+plt.style.use('default')
 plt.style.use('./python_files/figure_style.mplstyle')
-
-plt.close('all')
 
 # Xi directory
 xi_directory = ["xi_0-5", "xi_1-0", "xi_1-5"]
@@ -218,7 +217,7 @@ figsize *= 1 / 2.54
 
 # Create figure
 plt.close('all')
-fig = plt.figure(num='Spectrum Scans (Omega)', figsize=figsize)
+fig = plt.figure(num='Spectrum Scans (Omega)', figsize=figsize.tolist())
 ax = plt.gca()
 
 # Calculate the stretched boundary norm

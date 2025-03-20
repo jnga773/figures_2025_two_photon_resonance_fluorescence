@@ -8,10 +8,9 @@ Created on Sat Mar 25 01:03:32 2023
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Add thesis style sheet
+# Add figure style sheet
+plt.style.use('default')
 plt.style.use('./python_files/figure_style.mplstyle')
-
-plt.close('all')
 
 # Figure filename
 filename_out = "../svgs/fig3_spectrum_labelled_high_low_drive.svg"
@@ -114,8 +113,10 @@ for i in range(len(Omega)):
 figsize = np.array([9, 4.5])
 figsize *= 1 / 2.54
 
+# Create figure
+plt.close('all')
 fig, ax = plt.subplots(num='Spectrum (Low and High)', nrows=1, ncols=2,
-                       figsize=figsize, sharey=True)
+                       figsize=figsize.tolist(), sharey=True)
 
 # # Set constrained values for figure
 # fig.set_constrained_layout_pads(w_pad=0.01, h_pad=0.01,

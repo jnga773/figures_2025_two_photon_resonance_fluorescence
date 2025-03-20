@@ -309,7 +309,7 @@ def three_level_eig(Omega_in, alpha_in, delta_in, xi_in, vals_or_vecs='vals'):
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 def _Sigma_matrix_elements(Omega_in, alpha_in, delta_in, xi_in):
-    """
+    r"""
     Calculates the matrix elements (a1 - a9) of the \Sigma_{-} operator in the
     dressed state basis.
 
@@ -463,7 +463,7 @@ def _get_Gamma_ij(Gamma_in, Omega_in, alpha_in, delta_in, xi_in,
 #------------------------------------------------------------------------------#
 def _diagonal_moments_evolution_matrix(Gamma_in, Omega_in, alpha_in, delta_in,
                                        xi_in, matrix_dim=2):
-    """
+    r"""
     Calculates the evolution matrix for the diagonal moments (\sigma_{ij} = |i><j|),
         < \sigma_{mm} >, < \sigma_{uu} >, and < \sigma_{ll} > ,
     with either the 3x3 matrix or the 2x2 matrix and non-homogeneous vector.
@@ -546,7 +546,7 @@ def _diagonal_moments_evolution_matrix(Gamma_in, Omega_in, alpha_in, delta_in,
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 def steady_state_diagonal_moments(Gamma_in, Omega_in, alpha_in, delta_in, xi_in):
-    """
+    r"""
     Calculates the steady states of the diagonal moments (\sigma_{ij} = |i><j|),
         < \sigma_{mm} >, < \sigma_{uu} >, and < \sigma_{ll} > .
 
@@ -596,7 +596,7 @@ def steady_state_diagonal_moments(Gamma_in, Omega_in, alpha_in, delta_in, xi_in)
 #------------------------------------------------------------------------------#
 def calc_off_diagonal_moments(t_in, Gamma_in, Omega_in, alpha_in, delta_in, xi_in,
                               state_init, state_final, initial_in=1.0):
-    """
+    r"""
     Calculates the time evolution of the off-diagonal moments:
         \sigma_{ij} = |i><j|, i /= j.
     
@@ -664,7 +664,7 @@ def calc_off_diagonal_moments(t_in, Gamma_in, Omega_in, alpha_in, delta_in, xi_i
 def calc_diagonal_moments(t_in, Gamma_in, Omega_in, alpha_in, delta_in, xi_in,
                           initial_state, B_multiplier=1.0,
                           output_state='all', matrix_dim=2):
-    """
+    r"""
     Calculates the time evolution of the off-diagonal moments:
         \sigma_{ij} = |i > < i | .
 
@@ -862,7 +862,7 @@ def calc_g1_dressed_state(tau_in, Gamma_in, Omega_in, alpha_in, delta_in, xi_in,
 #------------------------------------------------------------------------------#
 def calc_g2_dressed_ops(tau_in, Gamma_in, Omega_in, alpha_in, delta_in,
                         xi_in, a_op_str, b_op_str):
-    """
+    r"""
     Calculates the approximate dressed state second-order correlation function
     based on input parameters:
         G^{(2)}(\tau) = < a^{\dagger}(0) b^{\dagger} b(\tau) a(0) >.
