@@ -21,7 +21,7 @@ REAL(KIND=8)                                           :: alpha
 ! Drive detuning from two-photon resonance
 REAL(KIND=8)                                           :: delta
 ! Dipole moment ratio
-REAL(KIND=8)                                           :: xi
+REAL(KIND=8)                                           :: xi, xi_squared
 
 ! Time stuff
 ! Time step
@@ -84,7 +84,7 @@ INTEGER            :: ISTAT, IUNIT
 ! Line to be read from file
 CHARACTER(LEN=512) :: LINE
 ! Namelist parameters
-NAMELIST /ATOM/ Gamma, Omega, alpha, delta, xi
+NAMELIST /ATOM/ Gamma, Omega, alpha, delta, xi_squared
 NAMELIST /SCANPARAMS/ scan_start, scan_end, scan_step
 NAMELIST /TIME/ dt, tau1_max, tau2_max
 
@@ -129,16 +129,21 @@ tau_steps = NINT(tau1_max / dt)
 ! Number of scan steps
 number_of_scans = NINT((scan_end - scan_start) / scan_step)
 
+! Set xi
+xi = SQRT(xi_squared)
+
 !==============================================================================!
 !                          CREATE DATA SUBDIRECTORIES                          !
 !==============================================================================!
 ! Create folder for data files
-IF (xi .EQ. 0.70710678118d0) THEN
+IF (xi .EQ. SQRT(0.5d0)) THEN
   data_directory = './data_files/scan_xi_1_over_root_2/'
 ELSE IF (xi .EQ. 1.0d0) THEN
   data_directory = './data_files/scan_xi_1/'
-ELSE IF (xi .EQ. 1.41421356237d0) THEN
+ELSE IF (xi .EQ. SQRT(2.0d0)) THEN
   data_directory = './data_files/scan_xi_root_2/'
+ELSE
+  data_directory = './data_files/'
 END IF
 
 ! Create data directory
