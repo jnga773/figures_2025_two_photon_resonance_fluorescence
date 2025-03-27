@@ -7,6 +7,7 @@ Created on Sat Mar 25 01:03:32 2023
 
 import numpy as np
 import matplotlib.pyplot as plt
+from python_files.jacobs_functions import spectrum
 
 # Add figure style sheet
 plt.style.use('default')
@@ -20,38 +21,6 @@ filename_out = "./svgs/fig5_spectrum_high_drive_xi.svg"
 #-----------------------------------------------------------------------------#
 #                                  FUNCTIONS                                  #
 #-----------------------------------------------------------------------------#
-def spectrum(tau_input, corr_input):
-    from numpy.fft import fft, fftshift, fftfreq
-    from numpy import where, mean, pi, array
-    from numpy import max as npmax
-
-    # Shift the arrays so they are arranged from negative to positive freq
-    fft = fft(corr_input)  # , norm='ortho')
-    fft = fftshift(fft)
-    freq = fftfreq(tau_input.shape[0], tau_input[1]-tau_input[0])
-    freq = fftshift(freq)
-
-    # As the central peak is a delta function, we ignore the plot for w=0. To
-    # do this we find the index in wlist where it is equal to 0.0, ignore it,
-    # and create a new list excluding this value.
-    indices = where(freq != 0.0)[0]
-
-    # Remove zero frequency term
-    spec_output = fft[indices]
-
-    # Take only the real part
-    spec_output = spec_output.real
-
-    # take away non zero tails
-    spec_output = spec_output - mean(spec_output[0])
-    wlist_output = freq[indices]  # wlist is in terms of FFT frequencies
-    wlist_output = array(wlist_output) * 2 * pi
-
-    # Normalise
-    spec_output = spec_output / npmax(spec_output)
-
-    return spec_output, wlist_output
-
 def calc_3LA_spectrum(Gamma_in, Omega_in, delta_in, alpha_in, xi_in, tau_in,
                       output='spectrum', reverse=True):
     """

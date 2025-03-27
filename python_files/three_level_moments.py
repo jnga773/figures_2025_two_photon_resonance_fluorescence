@@ -1,11 +1,46 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Jul  8 12:16:00 2021
+#==============================================================================#
+#          THREE-LEVEL LADDER-TYPE ATOM: BARE STATE MOMENT EQUATIONS           #
+#==============================================================================#
+# This Python module [three_level_moments.py] contain functions/routines to
+# calculate the time evolution of the atomic operator moments for a three-level
+# ladder-type atom.
+#
+# This module contains the following functions:
+# - _ij
+#   Converts the input state string into an index.
+#
+# - _matrix
+#   Calculates the 9x9 matrix that governs the evolution of the atomic operator
+#   moments.
+#
+# - three_level_eig
+#   Calculates the dressed/eigenvalues of the Hamiltonian in matrix form.
+#
+# - print_transition_frequencies
+#   Prints or outputs the frequencies for the dressed-state transitions.
+#
+# - steady_states
+#   Calculates the steady states (if xi != 0) for the three-level atomic
+#   operator moments using the inverse matrix method.
+#
+# - evolve_moments
+#   Using Runge-Kutta 4th order, solves for the time evolution of the three-
+#   level atomic operator moments.
+#
+# - atomic_population
+#   Using Runge-Kutta 4th order, solves for the time evolution of the three-
+#   level atomic operator moments.
+#
+# - g1_calc
+#   Using Runge-Kutta 4th order, solves for the time evolution of the first-
+#   order correlation function <\Sigma_{+}(0) \Sigma_{-}(\tau) >
+#
+# - g2_calc
+#   Using Runge-Kutta 4th order, solves for the time evolution of the second-
+#   order correlation function:
+#       < \Sigma_{+}(0) \Sigma_{+} \Sigma_{-}(\tau) \Sigma_{-}(0) >
 
-@author: jnga773
-"""
-
+#------------------------------------------------------------------------------#
 def _ij(state_in):
     r"""
     Converts the input state string into an index:
@@ -36,6 +71,7 @@ def _ij(state_in):
 
     return index_out
 
+#------------------------------------------------------------------------------#
 def _matrix(Gamma_in, Omega_in, alpha_in, delta_in, xi_in):
     r"""
     Calculates the 9x9 matrix:
@@ -122,6 +158,7 @@ def _matrix(Gamma_in, Omega_in, alpha_in, delta_in, xi_in):
     
     return matrix_out
 
+#------------------------------------------------------------------------------#
 def three_level_eig(Omega_in, alpha_in, delta_in, xi_in, vals_or_vecs='vals'):
     r"""
     Calculates the dressed/eigenvalues of the Hamiltonian in matrix form.
@@ -179,6 +216,7 @@ def three_level_eig(Omega_in, alpha_in, delta_in, xi_in, vals_or_vecs='vals'):
     if vals_or_vecs == 'both':
         return eigvals_out, eigvecs_out
     
+#------------------------------------------------------------------------------#
 def print_transition_frequencies(Omega_in, alpha_in, delta_in, xi_in,
                                  output=False):
     r"""
@@ -226,10 +264,11 @@ def print_transition_frequencies(Omega_in, alpha_in, delta_in, xi_in,
         
         return transition_frequencies
 
+#------------------------------------------------------------------------------#
 def steady_states(Gamma_in, Omega_in, alpha_in, delta_in, xi_in):
     r"""
     Calculates the steady states (if xi != 0) for the three-level atomic
-    opreator moments using the inverse matrix method.
+    operator moments using the inverse matrix method.
     
     Parameters
     ----------
@@ -275,6 +314,7 @@ def steady_states(Gamma_in, Omega_in, alpha_in, delta_in, xi_in):
         
     return steady_states_out
 
+#------------------------------------------------------------------------------#
 def evolve_moments(t_in, Gamma_in, Omega_in, alpha_in, delta_in, xi_in,
                    initial_in=[1, 0, 0, 0, 0, 0, 0, 0, 0], output_in='all'):
     r"""
@@ -367,6 +407,7 @@ def evolve_moments(t_in, Gamma_in, Omega_in, alpha_in, delta_in, xi_in,
     else:
         return moments_out[_ij(output_in)]
 
+#------------------------------------------------------------------------------#
 def atomic_population(t_in, Gamma_in, Omega_in, alpha_in, delta_in, xi_in,
                       initial_in=[1, 0, 0, 0, 0, 0, 0, 0, 0]):
     r"""
@@ -407,6 +448,7 @@ def atomic_population(t_in, Gamma_in, Omega_in, alpha_in, delta_in, xi_in,
     
     return moments_out
 
+#------------------------------------------------------------------------------#
 def g1_calc(tau_in, Gamma_in, Omega_in, alpha_in, delta_in, xi_in,
             reverse=False):
     r"""
@@ -489,6 +531,7 @@ def g1_calc(tau_in, Gamma_in, Omega_in, alpha_in, delta_in, xi_in,
     
     return g1_out
 
+#------------------------------------------------------------------------------#
 def g2_calc(tau_in, Gamma_in, Omega_in, alpha_in, delta_in, xi_in):
     r"""
     Using Runge-Kutta 4th order, solves for the time evolution of the second-

@@ -8,6 +8,7 @@ Created on Mon May 20 19:43:32 2024
 
 import numpy as np
 import matplotlib.pyplot as plt
+from python_files.jacobs_functions import spectrum, shifted_colour_map, stretch_boundary_norm
 
 # Add figure style sheet
 plt.style.use('default')
@@ -22,38 +23,6 @@ filename_out = './svgs/fig6{}_spectrum_scan_delta.svg'
 #-----------------------------------------------------------------------------#
 #                                  FUNCTIONS                                  #
 #-----------------------------------------------------------------------------#
-def spectrum(tau_input, corr_input):
-    from numpy.fft import fft, fftshift, fftfreq
-    from numpy import where, mean, pi, array
-    from numpy import max as npmax
-
-    # Shift the arrays so they are arranged from negative to positive freq
-    fft = fft(corr_input)  # , norm='ortho')
-    fft = fftshift(fft)
-    freq = fftfreq(tau_input.shape[0], tau_input[1]-tau_input[0])
-    freq = fftshift(freq)
-
-    # As the central peak is a delta function, we ignore the plot for w=0. To
-    # do this we find the index in wlist where it is equal to 0.0, ignore it,
-    # and create a new list excluding this value.
-    indices = where(freq != 0.0)[0]
-
-    # Remove zero frequency term
-    spec_output = fft[indices]
-
-    # Take only the real part
-    spec_output = spec_output.real
-
-    # take away non zero tails
-    spec_output = spec_output - mean(spec_output[0])
-    wlist_output = freq[indices]  # wlist is in terms of FFT frequencies
-    wlist_output = array(wlist_output) * 2 * pi
-
-    # Normalise
-    spec_output = spec_output / npmax(spec_output)
-
-    return spec_output, wlist_output
-
 def read_data(xi_in):
     """
     Reads the data my g
@@ -112,72 +81,6 @@ def read_data(xi_in):
     #     Output     #
     #----------------#
     return X_out, Y_out, spec_out
-
-def shiftedColorMap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
-    '''
-    Function to offset the "center" of a colormap. Useful for
-    data with a negative min and positive max and you want the
-    middle of the colormap's dynamic range to be at zero.
-
-    Input
-    -----
-      cmap : The matplotlib colormap to be altered
-      start : Offset from lowest point in the colormap's range.
-          Defaults to 0.0 (no lower offset). Should be between
-          0.0 and `midpoint`.
-      midpoint : The new center of the colormap. Defaults to 
-          0.5 (no shift). Should be between 0.0 and 1.0. In
-          general, this should be  1 - vmax / (vmax + abs(vmin))
-          For example if your data range from -15.0 to +5.0 and
-          you want the center of the colormap at 0.0, `midpoint`
-          should be set to  1 - 5/(5 + 15)) or 0.75
-      stop : Offset from highest point in the colormap's range.
-          Defaults to 1.0 (no upper offset). Should be between
-          `midpoint` and 1.0.
-    '''
-    from matplotlib import colors
-    cdict = {
-        'red': [],
-        'green': [],
-        'blue': [],
-        'alpha': []
-    }
-
-    # regular index to compute the colors
-    reg_index = np.linspace(start, stop, 257)
-
-    # shifted index to match the data
-    shift_index = np.hstack([
-        np.linspace(0.0, midpoint, 128, endpoint=False), 
-        np.linspace(midpoint, 1.0, 129, endpoint=True)
-    ])
-
-    for ri, si in zip(reg_index, shift_index):
-        r, g, b, a = cmap(ri)
-
-        cdict['red'].append((si, r, r))
-        cdict['green'].append((si, g, g))
-        cdict['blue'].append((si, b, b))
-        cdict['alpha'].append((si, a, a))
-
-    newcmap = colors.LinearSegmentedColormap(name, cdict)
-    plt.register_cmap(cmap=newcmap)
-
-    return newcmap
-
-def stretch_boundary_norm(boundaries_in, ncolours_in=256):
-    from matplotlib.colors import BoundaryNorm
-    from numpy import linspace, interp
-    
-    # Number of boundary points
-    N_bounds = len(boundaries_in)
-    # Stretch the bounds so colourmap is continuous-esque
-    stretched_bounds = interp(linspace(0, 1, ncolours_in+1), linspace(0, 1, N_bounds),
-                              boundaries_in)
-    # Return the norm
-    norm_out = BoundaryNorm(stretched_bounds, ncolors=ncolours_in)
-    
-    return norm_out
 
 #-----------------------------------------------------------------------------#
 #                                PARAMETERS                                   #
