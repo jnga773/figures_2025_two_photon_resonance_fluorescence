@@ -33,7 +33,7 @@ def calc_3LA_spectrum(Gamma_in, Omega_in, delta_in, alpha_in, xi_in, tau_in,
     #----------------------------------------------------#
     # Calculate the first-order correlation function
     G1_out = g1_calc(tau_in, Gamma_in, Omega_in, alpha_in, delta_in, xi_in,
-                     reverse=False)
+                     reverse)
     
     # Calculate spectrum
     spec, wlist = spectrum(tau, G1_out)
