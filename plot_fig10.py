@@ -34,121 +34,15 @@ def _peak_label_to_operator(label_str_in):
         exit("Wuh woh: state_in != {'-'3, '-2', '-1', '0', '+1', '+2', '+3'}")
     
     # Dictionary for correct operators
-    operator_dict = {'-3': 'ul_m',
-                     '-2': 'um_m',
+    operator_dict = {'-3': 'ul_p',
+                     '-2': 'um_p',
                      '-1': 'ml_p',
                       '0': 'sz',
                      '+1': 'ml_m',
-                     '+2': 'um_p',
-                     '+3': 'ul_p'}
+                     '+2': 'um_m',
+                     '+3': 'ul_m'}
     
     return operator_dict[label_str_in]
-
-def qutip_operators(Gamma_in, Omega_in, alpha_in, delta_in, xi_in):
-    """
-    Sets up the QuTiP operators.
-    """
-    from python_files.dressed_state_functions import three_level_eig, _Sigma_matrix_elements
-    from qutip import basis, lindblad_dissipator, liouvillian
-    from numpy import sqrt
-    
-    # Calculate eigenvalues for Hamiltonaian
-    wm, wu, wl = three_level_eig(Omega_in, alpha_in, delta_in, xi_in, 'vals')
-    
-    # Get matrix elements of Sigma_{-}
-    a1, a2, a3, a4, a5, a6, a7, a8, a9 = \
-        _Sigma_matrix_elements(Omega_in, alpha_in, delta_in, xi_in)
-    
-    # Dressed state: |m>, |u>, |l>
-    m, u, l = (basis(3, 0), basis(3, 1), basis(3, 2))
-
-    # |Lowering operators
-    um_m = m * u.dag()
-    ml_m = l * m.dag()
-    ul_m = l * u.dag()
-    
-    # Raising operators
-    um_p = um_m.dag()
-    ml_p = ml_m.dag()
-    ul_p = ul_m.dag()
-    
-    mm = m * m.dag()
-    uu = u * u.dag()
-    ll = l * l.dag()
-    
-    sz = uu - ll
-    
-    # Sort into dictionary for quick and easy access
-    operator_dict = {'um_m': um_m, 'um_p': um_p,
-                     'ml_m': ml_m, 'ml_p': ml_p,
-                     'ul_m': ul_m, 'ul_p': ul_p,
-                     'sz': sz}
-
-    #---------------------#
-    #     Hamiltonian     #
-    #---------------------#
-    # Hamiltonian
-    H_A = (wm * mm) + (wu * uu) + (wl * ll)
-    
-    # Collapse operators
-    c_ops = [sqrt(Gamma_in * (a1 ** 2)) * mm,
-             sqrt(Gamma_in * (a5 ** 2)) * uu,
-             sqrt(Gamma_in * (a9 ** 2)) * ll,
-             #-----------------------#
-             sqrt(Gamma_in * (a2 ** 2)) * um_m,
-             sqrt(Gamma_in * (a4 ** 2)) * um_p,
-             #-----------------------#
-             sqrt(Gamma_in * (a3 ** 2)) * ml_p,
-             sqrt(Gamma_in * (a7 ** 2)) * ml_m,
-             #-----------------------#
-             sqrt(Gamma_in * (a6 ** 2)) * ul_p,
-             sqrt(Gamma_in * (a8 ** 2)) * ul_m]
-    
-    # Turn into Louivillian
-    L_out = liouvillian(H_A, c_ops)
-    # # Append other terms
-    L_out = L_out + (Gamma_in * a1 * a5) * (lindblad_dissipator(mm, uu) + lindblad_dissipator(uu, mm))
-    L_out = L_out + (Gamma_in * a1 * a9) * (lindblad_dissipator(mm, ll) + lindblad_dissipator(ll, mm))
-    L_out = L_out + (Gamma_in * a5 * a9) * (lindblad_dissipator(uu, ll) + lindblad_dissipator(ll, uu))
-    
-    #----------------#
-    #     Output     #
-    #----------------#
-    # return H_A, c_ops, operator_dict
-    return L_out, operator_dict
-
-def calc_g2_qutip(tau_in, Gamma_in, Omega_in, alpha_in, delta_in, xi_in,
-                  a_op_str, b_op_str):
-    """
-    Uses QuTiP to calculate the second-order correlation function.
-    """
-    from qutip import expect, steadystate, mesolve
-    
-    # Get QuTiP operators
-    L, operator_dict = qutip_operators(Gamma_in, Omega_in, alpha_in, delta_in, xi_in)
-    
-    # # Get operators
-    a_op_qutip = operator_dict[a_op_str]
-    b_op_qutip = operator_dict[b_op_str]    
-    
-    # Calculate steady state density operator
-    rho_ss = steadystate(L)
-    
-    # Calculate steady state moments
-    a_ss = expect(a_op_qutip.dag() * a_op_qutip, rho_ss)
-    b_ss = expect(b_op_qutip.dag() * b_op_qutip, rho_ss)
-    
-    # Initial state
-    rho0 = a_op_qutip * rho_ss * a_op_qutip.dag()
-    
-    # Calculate second-order correlation function
-    result = mesolve(L, rho0, tau_in, e_ops=b_op_qutip.dag() * b_op_qutip)
-    G2 = result.expect[0]
-    
-    # Normalise
-    G2 *= (1 / (a_ss * b_ss))
-    
-    return G2.real
 
 def calc_g2_cross_dressed(tau_in, Gamma_in, Omega_in, alpha_in, delta_in, xi_in,
                           peak_1_in, peak_2_in):
@@ -156,17 +50,20 @@ def calc_g2_cross_dressed(tau_in, Gamma_in, Omega_in, alpha_in, delta_in, xi_in,
     Calculates the two-time cross correlation function for two different
     transitions, using the dressed state correlation functions.
     """
+    from python_files.dressed_state_correlations import calc_g2_dressed_state
+    # from python_files.dressed_state_correlations_qutip import calc_g2_dressed_state
+    
     # Convert peak string into operator string
     a_op_str = _peak_label_to_operator(peak_1_in)
     b_op_str = _peak_label_to_operator(peak_2_in)
     
     # Calculate the positive times
-    dressed_pos_out = calc_g2_qutip(tau_in, Gamma_in, Omega_in, alpha_in, delta_in, xi_in,
-                                    a_op_str, b_op_str)
+    dressed_pos_out = calc_g2_dressed_state(tau_in, Gamma_in, Omega_in, alpha_in, delta_in, xi_in,
+                                            a_op_str, b_op_str)
     
     # Flip operators and calculate negative times
-    dressed_neg_out = calc_g2_qutip(tau_in, Gamma_in, Omega_in, alpha_in, delta_in, xi_in,
-                                    b_op_str, a_op_str)
+    dressed_neg_out = calc_g2_dressed_state(tau_in, Gamma_in, Omega_in, alpha_in, delta_in, xi_in,
+                                            b_op_str, a_op_str)
     
     return dressed_neg_out, dressed_pos_out
 
@@ -246,7 +143,7 @@ label2 = plot_label(peak1, peak2)
 #     Peak 3     #
 #----------------#
 # Set operators
-peak1 = '-2'
+peak1 = '+2'
 peak2 = '+1'
 
 # Calculate dressed state correlation functions
