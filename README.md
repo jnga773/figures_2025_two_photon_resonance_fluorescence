@@ -2,6 +2,9 @@
 
 Python and Fortran scripts for generating the data and figures in the paper "Two-Photon Resonance Fluorescence of a Three-Level Ladder-Type Atom" by Jacob Ngaha, Scott Parkins, and Howard Carmichael.
 
+The paper can be found on the arXiv ([arXiv:2503.16772](
+https://doi.org/10.48550/arXiv.2503.16772)) and in Physical Review A ([Phys. Rev. A 112, 043701 (2025).](https://doi.org/10.1103/3lrt-ygwp))
+
 ## Usage
 Each of the `plot_figX.py` files can simply be run as standard Python scripts. They make use of the [Matplotlib](https://matplotlib.org/), [NumPy](https://numpy.org/), and [QuTiP](https://qutip.org/) libraries.
 
