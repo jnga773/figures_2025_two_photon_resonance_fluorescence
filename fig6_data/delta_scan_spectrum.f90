@@ -1,7 +1,32 @@
-PROGRAM THREE_LEVEL_ATOM_G1
+!==============================================================================!
+!                                                                              !
+!  Scans the drive detuning (from two-photon resonance) delta over a specified !
+!  range and, for each value, integrates the moment equations of a driven      !
+!  three-level atom (via 4th-order Runge-Kutta, using the routines in          !
+!  moment_equations_3LA_functions.f90) to compute the first-order              !
+!  correlation function g1(tau). The resulting g1(tau) curves are assembled    !
+!  into a matrix (rows = time steps tau, columns = delta values) -- the data   !
+!  needed to build a resonance fluorescence spectrum as a function of          !
+!  detuning.                                                                   !
+!                                                                              !
+!  Input:                                                                      !
+!    A NAMELIST file containing the ATOM, SCANPARAMS, and TIME groups          !
+!    (system parameters, delta scan range, and integration time step/          !
+!    duration respectively). Its path, along with the output data              !
+!    directory, can be set via command-line flags:                             !
+!      --data-dir=<path>    (default: ./data_files/)                           !
+!      --name-list=<path>   (default: ./ParamList.nml)                         !
+!                                                                              !
+!  Output (written to the data directory):                                     !
+!    g1_parameters.txt   -- system/scan/time parameters used for the run       !
+!    g1_corr_real.txt    -- real part of g1(tau), one column per delta         !
+!    g1_corr_imag.txt    -- imaginary part of g1(tau), one column per delta    !
+!                                                                              !
+!==============================================================================!
+PROGRAM DELTA_SCAN_SPECTRUM
 
 ! Import subroutines from the module file
-USE ATOM_SUBROUTINES
+USE MOMENT_EQUATIONS_3LA_FUNCTIONS
 
 !==============================================================================!
 !                    DEFINING AND DECLARING VARIABLES/ARRAYS                   !
@@ -13,116 +38,141 @@ IMPLICIT NONE
 !     SYSTEM PARAMETERS STUFF     !
 !---------------------------------!
 ! Atomic decay rate
-REAL(KIND=8)                                           :: Gamma
+REAL(dp)                                  :: Gamma
 ! Driving amplitude
-REAL(KIND=8)                                           :: Omega
+REAL(dp)                                  :: Omega
 ! Atomic anharmonicity
-REAL(KIND=8)                                           :: alpha
+REAL(dp)                                  :: alpha
 ! Drive detuning from two-photon resonance
-REAL(KIND=8)                                           :: delta
+REAL(dp)                                  :: delta
 ! Dipole moment ratio
-REAL(KIND=8)                                           :: xi, xi_squared
+REAL(dp)                                  :: xi, xi_squared
 
 ! Time stuff
 ! Time step
-REAL(KIND=8)                                           :: dt
+REAL(dp)                                  :: dt
 ! Maximum time to integrate for
-REAL(KIND=8)                                           :: tau1_max, tau2_max
+REAL(dp)                                  :: tau1_max, tau2_max
 ! Maximum number of steps to integrate for
-INTEGER                                                :: tau_steps
+INTEGER                                   :: tau_steps
 ! Runtime variables
-REAL(KIND=8)                                           :: start_time, end_time
+REAL(dp)                                  :: start_time, end_time
 
 ! Scan parameters
 ! Starting scan value
-REAL(KIND=8)                                           :: scan_start
+REAL(dp)                                  :: scan_start
 ! Final scan value
-REAL(KIND=8)                                           :: scan_end
+REAL(dp)                                  :: scan_end
 ! Scan step size
-REAL(KIND=8)                                           :: scan_step
+REAL(dp)                                  :: scan_step
 ! Number of scan steps
-INTEGER                                                :: number_of_scans
+INTEGER                                   :: number_of_scans
 
 ! Scan stuff
 ! Array of delta values to scan over
-REAL(KIND=8), DIMENSION(:), ALLOCATABLE                :: delta_array
+REAL(dp), DIMENSION(:), ALLOCATABLE       :: delta_array
 ! Scan variable
-REAL(KIND=8)                                           :: delta_scan
+REAL(dp)                                  :: delta_scan
 ! Run counter
-INTEGER                                                :: run_counter
+INTEGER                                   :: run_counter
 
 
 !----------------------------!
 !     OTHER USEFUL STUFF     !
 !----------------------------!
 ! Correlation data
-COMPLEX(KIND=8), DIMENSION(:), ALLOCATABLE             :: g1_array
+COMPLEX(dp), DIMENSION(:), ALLOCATABLE    :: g1_array
 ! Matrix of correlation values
-COMPLEX(KIND=8), DIMENSION(:, :), ALLOCATABLE          :: corr_matrix
+COMPLEX(dp), DIMENSION(:, :), ALLOCATABLE :: corr_matrix
 ! Index integer
-INTEGER                                                :: index
+INTEGER                                   :: idx
 
 !------------------------!
 !     FILENAME STUFF     !
 !------------------------!
-! Paramert Name List
-CHARACTER(LEN=15), PARAMETER                           :: filename_ParamList = "./ParamList.nml"
+! Parameter Name List
+CHARACTER(:), ALLOCATABLE                 :: filename_NameList
 ! Data subdirectory name
-CHARACTER(LEN=99)                                      :: data_directory
+CHARACTER(:), ALLOCATABLE                 :: data_directory
 ! Filename of parameters
-CHARACTER(LEN=99)                                      :: filename_parameters
+CHARACTER(LEN=99)                         :: filename_parameters = 'g1_parameters.txt'
 ! Filename for first-order correlation
-CHARACTER(LEN=99)                                      :: filename_g1_real
-CHARACTER(LEN=99)                                      :: filename_g1_imag
+CHARACTER(LEN=99)                         :: filename_g1_real = 'g1_corr_real.txt'
+CHARACTER(LEN=99)                         :: filename_g1_imag = 'g1_corr_imag.txt'
+
+! Read status integer
+INTEGER                                   :: ISTAT
+! NameList file unit integer
+INTEGER                                   :: IUNIT_NML = 420
+! Line to be read from file
+CHARACTER(LEN=512)                        :: LINE
 
 !==============================================================================!
-!                 NAMELIST AND PARAMETERS TO BE READ FROM FILE                 !
+!                      DEFINE PARAMETERS IN NAMELIST FILE                      !
 !==============================================================================!
-! NameList things
-! Status and unit integers
-INTEGER            :: ISTAT, IUNIT
-! Line to be read from file
-CHARACTER(LEN=512) :: LINE
 ! Namelist parameters
 NAMELIST /ATOM/ Gamma, Omega, alpha, delta, xi_squared
 NAMELIST /SCANPARAMS/ scan_start, scan_end, scan_step
 NAMELIST /TIME/ dt, tau1_max, tau2_max
 
+!==============================================================================!
+!                             INITIALISE RUN TIME                              !
+!==============================================================================!
 ! Call start time from CPU_TIME
 CALL CPU_TIME(start_time)
 
-! Read the parameters from the NAMELIST file
-IUNIT = 420
-OPEN(IUNIT, FILE=filename_ParamList, STATUS="OLD", DELIM="QUOTE")
+!==============================================================================!
+!               PARSE INPUT FOR DATA DIRECTORY AND NAMELIST FILE               !
+!==============================================================================!
+! Parse input arguments for data_directory and filename_NameList
+CALL PARSE_INPUT_ARGUMENTS(data_directory, filename_NameList)
 
-READ(IUNIT, NML=ATOM, IOSTAT=ISTAT)
+! Print data directory and NameList file
+WRITE(*, *) 'Reading parameters from: ' // TRIM(filename_NameList)
+WRITE(*, *) ' Save data to directory: ' // TRIM(data_directory)
+
+!==============================================================================!
+!                      READ PARAMETERS FROM NAMELIST FILE                      !
+!==============================================================================!
+! Read the parameters from the NAMELIST file
+OPEN(IUNIT_NML, FILE=filename_NameList, STATUS="OLD", DELIM="QUOTE")
+
+! Read the 'ATOM' name list
+READ(IUNIT_NML, NML=ATOM, IOSTAT=ISTAT)
 IF (ISTAT .NE. 0) THEN
-  BACKSPACE(IUNIT)
-  READ(IUNIT, FMT='(A)') LINE
-  CLOSE(IUNIT)
+  BACKSPACE(IUNIT_NML)
+  READ(IUNIT_NML, FMT='(A)') LINE
+  CLOSE(IUNIT_NML)
   PRINT *, "Invalid line in ATOM namelist: " // TRIM(line)
   CALL EXIT(1)
 END IF
 
-READ(IUNIT, NML=SCANPARAMS, IOSTAT=ISTAT)
+! Read the 'SCANPARAMS' name list
+READ(IUNIT_NML, NML=SCANPARAMS, IOSTAT=ISTAT)
 IF (ISTAT .NE. 0) THEN
-  BACKSPACE(IUNIT)
-  READ(IUNIT, FMT='(A)') LINE
-  CLOSE(IUNIT)
+  BACKSPACE(IUNIT_NML)
+  READ(IUNIT_NML, FMT='(A)') LINE
+  CLOSE(IUNIT_NML)
   PRINT *, "Invalid line in SCANPARAMS namelist: " // TRIM(line)
   CALL EXIT(1)
 END IF
 
-READ(IUNIT, NML=TIME, IOSTAT=ISTAT)
+! Read the 'TIME' name list
+READ(IUNIT_NML, NML=TIME, IOSTAT=ISTAT)
 IF (ISTAT .NE. 0) THEN
-  BACKSPACE(IUNIT)
-  READ(IUNIT, FMT='(A)') LINE
-  CLOSE(IUNIT)
+  BACKSPACE(IUNIT_NML)
+  READ(IUNIT_NML, FMT='(A)') LINE
+  CLOSE(IUNIT_NML)
   PRINT *, "Invalid line in TIME namelist: " // TRIM(line)
   CALL EXIT(1)
 END IF
-CLOSE(IUNIT)
 
+! Close file
+CLOSE(IUNIT_NML)
+
+!---------------------------!
+!     Format Parameters     !
+!---------------------------!
 ! Number of time-steps
 tau_steps = NINT(tau1_max / dt)
 
@@ -133,42 +183,41 @@ number_of_scans = NINT((scan_end - scan_start) / scan_step)
 xi = SQRT(xi_squared)
 
 !==============================================================================!
-!                          CREATE DATA SUBDIRECTORIES                          !
-!==============================================================================!
-! Create folder for data files
-IF (xi .EQ. SQRT(0.5d0)) THEN
-  data_directory = './data_files/scan_xi_1_over_root_2/'
-ELSE IF (xi .EQ. 1.0d0) THEN
-  data_directory = './data_files/scan_xi_1/'
-ELSE IF (xi .EQ. SQRT(2.0d0)) THEN
-  data_directory = './data_files/scan_xi_root_2/'
-ELSE
-  data_directory = './data_files/'
-END IF
-
-! Create data directory
-PRINT*, data_directory
-CALL EXECUTE_COMMAND_LINE("mkdir -p " // TRIM(data_directory))
-
-! Set filenames
-filename_parameters = TRIM(data_directory) // "g1_parameters.txt"
-filename_g1_real    = TRIM(data_directory) // "g1_corr_real.txt"
-filename_g1_imag    = TRIM(data_directory) // "g1_corr_imag.txt"
-
-!==============================================================================!
 !                         ALLOCATING ARRAYS AND STUFF                          !
 !==============================================================================!
 ! Set halfwidth array
 ALLOCATE(delta_array(0:number_of_scans))
 delta_array = 0.0d0
 ! Set values
-DO index = 0, number_of_scans
-  delta_array(index) = scan_start + DBLE(index) * scan_step
+DO idx = 0, number_of_scans
+  delta_array(idx) = scan_start + DBLE(idx) * scan_step
 END DO
 
 ! Allocate data matrix
 ALLOCATE(corr_matrix(0:tau_steps, 0:number_of_scans))
 corr_matrix = 0.0d0
+
+!==============================================================================!
+!                          CREATE DATA SUBDIRECTORIES                          !
+!==============================================================================!
+! ! Create folder for data files
+! IF (xi .EQ. SQRT(0.5d0)) THEN
+!   data_directory = './data_files/scan_xi_1_over_root_2/'
+! ELSE IF (xi .EQ. 1.0d0) THEN
+!   data_directory = './data_files/scan_xi_1/'
+! ELSE IF (xi .EQ. SQRT(2.0d0)) THEN
+!   data_directory = './data_files/scan_xi_root_2/'
+! ELSE
+!   data_directory = './data_files/'
+! END IF
+
+! Create data directory
+CALL EXECUTE_COMMAND_LINE("mkdir -p " // TRIM(data_directory))
+
+! Set filenames
+filename_parameters = TRIM(data_directory) // "g1_parameters.txt"
+filename_g1_real    = TRIM(data_directory) // "g1_corr_real.txt"
+filename_g1_imag    = TRIM(data_directory) // "g1_corr_imag.txt"
 
 !==============================================================================!
 !                           WRITE PARAMETERS TO FILE                           !
@@ -189,9 +238,9 @@ WRITE(1,"(A15,F25.15)") "Max tau1 =", tau1_max
 ! WRITE(1,"(A15,F25.15)") "Max tau2 =", tau2_max
 
 WRITE(1, *) " "
-WRITE(1, *) "Halfwidth Scan Values"
-DO index = 0, number_of_scans
-  WRITE(1, "(A15, F25.15)") "delta =", delta_array(index)
+WRITE(1, *) "delta Scan Values"
+DO idx = 0, number_of_scans
+  WRITE(1, "(A15, F25.15)") "delta =", delta_array(idx)
 END DO
 
 ! Close file
@@ -204,20 +253,20 @@ CLOSE(1)
 run_counter = 0
 
 ! Set OMP clauses
-!$OMP PARALLEL DO PRIVATE(index, delta_scan, g1_array) SHARED(run_counter)
+!$OMP PARALLEL DO PRIVATE(idx, delta_scan, g1_array) SHARED(run_counter)
 
 ! Cycle through halfwidth values
-DO index = 0, number_of_scans
+DO idx = 0, number_of_scans
   ! Grab delta value
-  delta_scan = delta_array(index)
+  delta_scan = delta_array(idx)
 
   ! Calculate g1
   CALL G1_CalculateRK4(Gamma, Omega, alpha, delta_scan, xi, &
-                    & dt, tau_steps, &
-                    & g1_array, .FALSE., "NONE")
+                       dt, tau_steps, &
+                       g1_array, .FALSE., "NONE")
 
   ! Save data to matrix
-  corr_matrix(:, index) = g1_array
+  corr_matrix(:, idx) = g1_array
 
   ! Deallocate the data array
   DEALLOCATE(g1_array)
@@ -241,14 +290,14 @@ OPEN(UNIT=3, FILE=filename_g1_imag, STATUS='REPLACE', ACTION='WRITE', RECL=32000
 ! OPEN(UNIT=3, FILE="./data_files/scan/g1_corr_imag.dat", STATUS='REPLACE', FORM='UNFORMATTED')
 
 ! Scan through time steps
-DO index = 0, tau_steps
+DO idx = 0, tau_steps
   ! Write to file by g1 point.
   ! Each row is a data point, each column is a scan
-  WRITE(2, *) REAL(corr_matrix(index, :))
-  WRITE(3, *) AIMAG(corr_matrix(index, :))
+  WRITE(2, *) REAL(corr_matrix(idx, :))
+  WRITE(3, *) AIMAG(corr_matrix(idx, :))
 
-  ! WRITE(2) REAL(corr_matrix(index, :))
-  ! WRITE(3) AIMAG(corr_matrix(index, :))
+  ! WRITE(2) REAL(corr_matrix(idx, :))
+  ! WRITE(3) AIMAG(corr_matrix(idx, :))
 END DO
 
 ! Close files
@@ -263,5 +312,112 @@ CLOSE(3)
 CALL CPU_TIME(end_time)
 PRINT*, "Runtime: ", end_time - start_time, "seconds"
 
+!==============================================================================!
+!                                 SUBROUTINES                                  !
+!==============================================================================!
+CONTAINS
 
-END PROGRAM THREE_LEVEL_ATOM_G1
+SUBROUTINE PARSE_INPUT_ARGUMENTS(data_dir, filename_NameList)
+  ! Parses command-line arguments to set the data output directory and
+  ! parameter namelist filepath. Accepts flags with or without the '--'
+  ! prefix (e.g. --data-dir=./out/ or data-dir=./out/). Applies
+  ! normalisation: ensures data_dir ends with '/' and that both paths
+  ! are prepended with './' if they are not absolute or parent-relative.
+  ! Falls back to './data_files/' and './NameList.nml' if the
+  ! corresponding flag is not supplied.
+
+  !============================================================================!
+  !                      DEFINING AND DECLARING VARIABLES                      !
+  !============================================================================!
+  !----------------!
+  !     OUTPUT     !
+  !----------------!
+  ! Data directory to save (or read) data from
+  CHARACTER(:), ALLOCATABLE, INTENT(OUT) :: data_dir
+  ! Filename of NameList to read parameters from
+  CHARACTER(:), ALLOCATABLE, INTENT(OUT) :: filename_NameList
+
+  !----------------------!
+  !     OTHER THINGS     !
+  !----------------------!
+  ! Number of arguments
+  INTEGER                                 :: N_args, idx
+  ! Input argument
+  CHARACTER(LEN=256)                      :: arg_char
+  ! Logical check for parameter input
+  LOGICAL                                 :: found_data_dir, found_NameList
+
+  !============================================================================!
+  !                          CALCULATE FUNCTION OUTPUT                         !
+  !============================================================================!
+  !--------------------!
+  !     Read Input     !
+  !--------------------!
+  found_data_dir   = .FALSE.
+  found_NameList = .FALSE.
+  N_args = COMMAND_ARGUMENT_COUNT()
+
+  DO idx = 1, N_args
+    CALL GET_COMMAND_ARGUMENT(idx, arg_char)
+
+    IF (INDEX(arg_char, '--data-dir=') == 1) THEN
+      data_dir = TRIM(arg_char(12:))
+      found_data_dir = .TRUE.
+
+    ELSE IF (INDEX(arg_char, 'data-dir=') == 1) THEN
+      data_dir = TRIM(arg_char(10:))
+      found_data_dir = .TRUE.
+
+    ELSE IF (INDEX(arg_char, '--name-list=') == 1) THEN
+      filename_NameList = TRIM(arg_char(13:))
+      found_NameList = .TRUE.
+
+    ELSE IF (INDEX(arg_char, 'name-list=') == 1) THEN
+      filename_NameList = TRIM(arg_char(11:))
+      found_NameList = .TRUE.
+
+    END IF
+  END DO
+
+  !------------------------!
+  !     Default Option     !
+  !------------------------!
+  IF (.NOT. found_data_dir) THEN
+    data_dir = './data_files/'
+  END IF
+
+  IF (.NOT. found_NameList) THEN
+    filename_NameList = './ParamList.nml'
+  END IF
+
+  !------------------------------!
+  !     Normalise 'data_dir'     !
+  !------------------------------!
+  ! Append trailing '/' if missing
+  IF (data_dir(LEN(data_dir):LEN(data_dir)) .NE. '/') THEN
+    data_dir = data_dir // '/'
+  END IF
+
+  ! Prepend './' if not absolute and not parent-relative
+  IF (data_dir(1:1) .NE. '/' .AND. data_dir(1:3) .NE. '../') THEN
+    IF (data_dir(1:2) .NE. './') THEN
+      data_dir = './' // data_dir
+    END IF
+  END IF
+
+  !--------------------------------!
+  !     Normalise 'param_list'     !
+  !--------------------------------!
+  ! Prepend './' if not absolute and not parent-relative
+  IF (filename_NameList(1:1) .NE. '/' .AND. filename_NameList(1:3) .NE. '../') THEN
+    IF (filename_NameList(1:2) .NE. './') THEN
+      filename_NameList = './' // filename_NameList
+    END IF
+  END IF
+
+END SUBROUTINE PARSE_INPUT_ARGUMENTS
+
+!==============================================================================!
+!                                END OF PROGRAM                                !
+!==============================================================================!
+END PROGRAM DELTA_SCAN_SPECTRUM

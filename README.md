@@ -8,30 +8,40 @@ https://doi.org/10.48550/arXiv.2503.16772)) and in Physical Review A ([Phys. Rev
 ## Usage
 Each of the `plot_figX.py` files can simply be run as standard Python scripts. They make use of the [Matplotlib](https://matplotlib.org/), [NumPy](https://numpy.org/), and [QuTiP](https://qutip.org/) libraries.
 
-For the `figX_data` folders, the programs are written in Fortran90 and and can be compiled using Intel's oneAPI `ifx` compiler, with the command
+For the `figX_data` folders, the programs are written in Fortran90 and and can be compiled using the `make` file included in each folder. There are options for either `gfortran` or Intel one API's `ifx` compilers.
+
+Alternatively, you can compile with the command
 ```
-ifx -O3 -qmkl -o [executable_name] MODULE_atom.f90 [filename.f90]
+ifx -O3 -qmkl -o [executable_name] [module.f90] [filename.f90]
 ```
-where the `-mkl`(`/Qmkl`) flag links to Intel's MKL libraries, which are included with the compiler, and are needed to access the `LAPACK` routines. Similarly, you can compile them with `gfortran` using the command
+where the `-qmkl`(`/Qmkl`) flag links to Intel's MKL libraries, which are included with the compiler, and are needed to access the `LAPACK` routines. Similarly, you can compile them with `gfortran` using the command
 ```
-gfortran -O3 -o [executable_name] MODULE_atom.f90 [filename.f90] -I/path/to/lapack -L/path/to/lapack -lblas -llapack
+gfortran -O3 -o [executable_name] [module.f90] [filename.f90] -I/path/to/lapack -L/path/to/lapack -lblas -llapack
 ```
 You will need to compile and install the necessary lapack routine files ([BLAS](https://www.netlib.org/blas/), [LAPACK](https://www.netlib.org/lapack), and [LAPACK95](https://www.netlib.org/lapack95)).
+
+Upon compiling, the programs can be run via the terminal, with options:
+```
+--data-dir=/path/to/save/data/
+--name-list=/path/to/namelist.nml
+```
 
 The programs take the necessary parameters from the `ParamList.nml` file, which is included in each directory, hence the code only needs to be compiled once.
 
 ## Files
 - `fig4_data`
   - `data_files`: Folder containing the output data from `Omega_scan_spectrum.f90`.
-  - `MODULE_atom.f90`: Contains the Fortran subroutines used to calculate the evolution of the master equation of the three-level atom.
+  - `moment_equations_3LA_functions.f90`: Contains the Fortran subroutines used to calculate the evolution of the master equation of the three-level atom.
   - `Omega_scan_spectrum.f90`: Calculates the data for Fig. 4 - the first-order correlation function for the parameters set in `ParamList.nml` and for different values of driving amplitude $\Omega$. 
   - `ParamList.nml`: Fortran NameList file for the system and calculation parameters.
+  - `Makefile`: Compilation `make` file.
 
 - `fig6_data`
   - `data_files`: Folder containing the output data from `delta_scan_spectrum.f90`.
-  - `MODULE_atom.f90`: Contains the Fortran subroutines used to calculate the evolution of the master equation of the three-level atom.
+  - `moment_equations_3LA_functions.f90`: Contains the Fortran subroutines used to calculate the evolution of the master equation of the three-level atom.
   - `delta_scan_spectrum.f90`: Calculates the data for Fig. 6 - the first-order correlation function for the parameters set in `ParamList.nml` and for different values of drive detuning $\delta$. 
   - `ParamList.nml`: Fortran NameList file for the system and calculation parameters.
+  - `Makefile`: Compilation `make` file.
 
 - `python_files`
   - `dressed_state_functions.py`: Contains the Python functions used to calculate the dressed-state approximation correlation functions.
